@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate, Link } from "react-router-dom"
+import { Routes, Route, useNavigate, Link } from "react-router-dom"
 import { useEffect, useState } from "react";
 import { auth } from "./firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
@@ -9,9 +9,14 @@ import SignIn from "./components/Signin"
 import Flight from "./components/Flight"
 import Dashboard from "./components/Dashboard"
 import LogEmissions from "./components/LogEmissions";
+
 // import './App.css'
 
+
+
 function App() {
+
+  const navigate = useNavigate();
 
   const [authUser, setAuthUser] = useState(null);
 
@@ -33,6 +38,7 @@ function App() {
   const userSignOut = () => {
       signOut(auth).then(() => {
           console.log("signed out");
+          navigate('/');
       }).catch(error => console.log(error));
   }
 

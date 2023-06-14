@@ -63,7 +63,7 @@ function Vehicle() {
     useEffect(() => {
         if (models !== []) {
             console.log(models);
-            // Filter models to remove duplicate names for dropdown
+            // Map and filter models to remove duplicate names for dropdown
             const names = models.map((item) => item.data.attributes.name);
             const namesFiltered = names.filter((item, index) => !names.includes(item, index + 1));
             setFilteredModels(namesFiltered);
@@ -129,7 +129,7 @@ function Vehicle() {
     return (
         <div className="text-center justify-center mt-10">
             <h1 className="mb-4">Vehicle Emissions</h1>
-            <form className="mx-auto" onSubmit={vehicleCalc}>
+            <form className="relative" onSubmit={vehicleCalc}>
                 <label className="mb-2 font-medium text-gray-900">Vehicle Make</label>
                 <div className="flex py-3 mx-auto mb-4 w-50 overflow-hidden rounded-md bg-white shadow shadow-black/20">
                     <input id="multiLevelDropdownButton" data-dropdown-toggle="dropdown" className="block text-center font-medium text-xl w-full flex-1 py-2 px-3 focus:outline-none" type="text" placeholder="Toyota" value={make} onChange={(e)=>{
@@ -138,8 +138,8 @@ function Vehicle() {
                         }} />
                 </div>
                 { makeDropdown && make !== '' &&
-                    <div id="dropdown" className="flex relative justify-center font-medium text-lg py-3 mx-auto mb-4 w-50 max-h-60 overflow-y-scroll z-10 bg-gray-100 divide-y divide-gray-200 rounded-lg shadow">
-                        <ul className="py-2 w-full text-lg text-gray-800 justify-center">
+                    <div id="dropdown" className="absolute inset-x-0 flex justify-center mx-auto font-medium text-lg py-3 mb-4 w-50 max-h-60 overflow-y-scroll z-10 bg-gray-100 divide-y divide-gray-200 rounded-lg shadow">
+                        <ul className=" py-2 w-full text-lg text-gray-800 justify-center">
                             { makes.filter((item) => {
                                 const searchTerm = make.toLowerCase();
                                 const makeName = item.data.attributes.name.toLowerCase();
@@ -163,7 +163,7 @@ function Vehicle() {
                         }} />
                 </div>
                 { modelDropdown && model !== '' &&
-                    <div id="dropdown" className="flex relative justify-center font-medium text-lg py-3 mx-auto mb-4 w-50 max-h-60 overflow-y-scroll z-10 bg-gray-100 divide-y divide-gray-200 rounded-lg shadow">
+                    <div id="dropdown" className="absolute inset-x-0 flex justify-center font-medium text-lg py-3 mx-auto mb-4 w-50 max-h-60 overflow-y-scroll z-10 bg-gray-100 divide-y divide-gray-200 rounded-lg shadow">
                         <ul className="py-2 w-full text-lg text-gray-800 justify-center">
                             { filteredModels.filter((item) => {
 
@@ -188,7 +188,7 @@ function Vehicle() {
                         }} />
                 </div>
                 { yearDropdown && year !== '' &&
-                    <div id="dropdown" className="flex relative justify-center font-medium text-lg py-3 mx-auto mb-4 w-50 max-h-60 overflow-y-scroll z-10 bg-gray-100 divide-y divide-gray-200 rounded-lg shadow">
+                    <div id="dropdown" className="absolute inset-x-0 flex  justify-center font-medium text-lg py-3 mx-auto mb-4 w-50 max-h-60 overflow-y-scroll z-10 bg-gray-100 divide-y divide-gray-200 rounded-lg shadow">
                         <ul className="py-2 w-full text-lg text-gray-800 justify-center">
                             { filteredYears.filter((item) => {
                                 const searchYear = String(year);
