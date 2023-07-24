@@ -1,23 +1,26 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { collection, addDoc } from "firebase/firestore";
+import { db } from "../firebase";
+import { useNavigate } from "react-router-dom";
 
+function Vehicle(props) {
 
-function Vehicle() {
+    const navigate = useNavigate()
 
+    const user = props.user;
+    let date = '';
+
+    const [chosenDate, setChosenDate] = useState('');
     const [makes, setMakes] = useState([]);
     const [make, setMake] = useState('');
-    const [makeDropdown, setMakeDropdown] = useState(false);
+    const [dropdown, setDropdown] = useState('');
     const [makeId, setMakeId] = useState('');
     const [models, setModels] = useState([]);
     const [model, setModel] = useState('');
     const [filteredModels, setFilteredModels] = useState([]);
-    const [modelDropdown, setModelDropdown] = useState(false);
-    const [modelId, setModelId] = useState('');
-    const [years, setYears] = useState([]);
     const [year, setYear] = useState('');
     const [filteredYears, setFilteredYears] = useState([]);
-    const [yearDropdown, setYearDropdown] = useState(false);
-    const [vehicleId, setVehicleId] = useState(null);
     const [distance, setDistance] = useState('');
     
     const endpoint = 'https://www.carboninterface.com/api/v1/estimates';
@@ -99,6 +102,14 @@ function Vehicle() {
 
         e.preventDefault();
 
+        // If no date specified then set date to today, otherwise change chosen date to timestamp
+        if (chosenDate === '') {
+            date = new Date();
+        } else {
+            let dateParts = chosenDate.split('/');
+            date = new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0]);
+        }
+
         const vehicle = await findVehicleId();
 
         console.log('Vehicle ID:', vehicle)
@@ -118,26 +129,51 @@ function Vehicle() {
                 'Content-Type': 'application/json'
             },
         }).then((response) => {
-            console.log(response.data);
+            addToFirestore(response.data);
+            navigate('/dashboard');
         }).catch((error) => {
             console.log(error);
         })
     }
 
-    // console.log('Makes: ', makes);
+    const addToFirestore = async (data) => {
+        console.log(date)
+        // Add data to Firestore
+        try {
+            const docRef = await addDoc(collection(db, `userDetails/${user.uid}/vehicleEmissions`), {
+                user: user.uid,
+                date: date,
+                emissions: data.data.attributes.carbon_kg,
+                distance: distance,
+                vehicle_make: data.data.attributes.vehicle_make,
+                vehicle_model: data.data.attributes.vehicle_model,
+                vehicle_year: data.data.attributes.vehicle_year
+            })
+            navigate('/dashboard')
+            console.log(data)
+        } catch (e) {
+            console.log(e);
+        }
+    }
 
     return (
         <div className="text-center justify-center mt-10">
-            <h1 className="mb-4">Vehicle Emissions</h1>
+            <h1 className="mb-4 font-thin">VEHICLE EMISSIONS</h1>
             <form className="relative" onSubmit={vehicleCalc}>
+
+                <label className="mb-2 font-medium text-gray-900">Date</label>
+                <div className="flex py-3 mx-auto mb-4 w-50 overflow-hidden rounded-md bg-white shadow shadow-black/20">
+                    <input className="block text-center font-medium text-xl w-full flex-1 py-2 px-3 focus:outline-none" type="text" placeholder="dd/mm/yyyy" value={chosenDate} onChange={(e) => setChosenDate(e.target.value)} />
+                </div>
+
                 <label className="mb-2 font-medium text-gray-900">Vehicle Make</label>
                 <div className="flex py-3 mx-auto mb-4 w-50 overflow-hidden rounded-md bg-white shadow shadow-black/20">
                     <input id="multiLevelDropdownButton" data-dropdown-toggle="dropdown" className="block text-center font-medium text-xl w-full flex-1 py-2 px-3 focus:outline-none" type="text" placeholder="Toyota" value={make} onChange={(e)=>{
                         setMake(e.target.value);
-                        setMakeDropdown(true);
+                        setDropdown('make');
                         }} />
                 </div>
-                { makeDropdown && make !== '' &&
+                { dropdown === 'make' && make !== '' &&
                     <div id="dropdown" className="absolute inset-x-0 flex justify-center mx-auto font-medium text-lg py-3 mb-4 w-50 max-h-60 overflow-y-scroll z-10 bg-gray-100 divide-y divide-gray-200 rounded-lg shadow">
                         <ul className=" py-2 w-full text-lg text-gray-800 justify-center">
                             { makes.filter((item) => {
@@ -149,7 +185,7 @@ function Vehicle() {
                             .map((item, index) => <li className="text-center w-full hover:bg-gray-200" key={index} onClick={()=>{
                                 setMake(item.data.attributes.name);
                                 setMakeId(item.data.id);
-                                setMakeDropdown(false);
+                                setDropdown('');
                             }}><button>{item.data.attributes.name}</button></li>) }
                         </ul>
                     </div>
@@ -159,10 +195,10 @@ function Vehicle() {
                 <div className="flex py-3 mx-auto mb-4 w-50 overflow-hidden rounded-md bg-white shadow shadow-black/20">
                     <input id="multiLevelDropdownButton" className="block text-center font-medium text-xl w-full flex-1 py-2 px-3 focus:outline-none" type="text" placeholder="Camry" value={model} onChange={(e)=>{
                         setModel(e.target.value);
-                        setModelDropdown(true);
+                        setDropdown('model');
                         }} />
                 </div>
-                { modelDropdown && model !== '' &&
+                { dropdown === 'model' && model !== '' &&
                     <div id="dropdown" className="absolute inset-x-0 flex justify-center font-medium text-lg py-3 mx-auto mb-4 w-50 max-h-60 overflow-y-scroll z-10 bg-gray-100 divide-y divide-gray-200 rounded-lg shadow">
                         <ul className="py-2 w-full text-lg text-gray-800 justify-center">
                             { filteredModels.filter((item) => {
@@ -174,7 +210,7 @@ function Vehicle() {
                             })
                             .map((item, index) => <li className="text-center w-full hover:bg-gray-200" key={index} onClick={()=>{
                                 setModel(item);
-                                setModelDropdown(false);
+                                setDropdown('');
                             }}><button>{item}</button></li>) }
                         </ul>
                     </div>
@@ -184,10 +220,10 @@ function Vehicle() {
                 <div className="flex py-3 mx-auto mb-4 w-50 overflow-hidden rounded-md bg-white shadow shadow-black/20">
                     <input id="multiLevelDropdownButton" className="block text-center font-medium text-xl w-full flex-1 py-2 px-3 focus:outline-none" type="integer" placeholder="1993" value={year} onChange={(e)=>{
                         setYear(e.target.value);
-                        setYearDropdown(true);
+                        setDropdown('year');
                         }} />
                 </div>
-                { yearDropdown && year !== '' &&
+                { dropdown === 'year' && year !== '' &&
                     <div id="dropdown" className="absolute inset-x-0 flex  justify-center font-medium text-lg py-3 mx-auto mb-4 w-50 max-h-60 overflow-y-scroll z-10 bg-gray-100 divide-y divide-gray-200 rounded-lg shadow">
                         <ul className="py-2 w-full text-lg text-gray-800 justify-center">
                             { filteredYears.filter((item) => {
@@ -198,7 +234,7 @@ function Vehicle() {
                             })
                             .map((item, index) => <li className="text-center w-full hover:bg-gray-200" key={index} onClick={()=>{
                                 setYear(String(item));
-                                setYearDropdown(false);
+                                setDropdown('');
                             }}><button>{item}</button></li>) }
                         </ul>
                     </div>

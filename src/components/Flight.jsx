@@ -1,16 +1,32 @@
 import { useState } from "react";
 import axios from "axios";
+import { collection, addDoc } from "firebase/firestore";
+import { db } from "../firebase";
+import { useNavigate } from "react-router-dom";
 
 
-function Flight() {
+function Flight(props) {
 
-    const [passengers, setPassengers] = useState()
-    const [departure, setDeparture] = useState('')
-    const [destination, setDestination] = useState('')
+    const navigate = useNavigate();
+
+    const user = props.user;
+    let date = '';
+
+    const [chosenDate, setChosenDate] = useState('');
+    const [passengers, setPassengers] = useState(null);
+    const [departure, setDeparture] = useState('');
+    const [destination, setDestination] = useState('');
 
     const flightCalc = (e) => {
 
         e.preventDefault();
+
+        if (chosenDate === '') {
+            date = new Date();
+        } else {
+            let dateParts = chosenDate.split('/');
+            date = new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0]);
+        }
     
         const requestData = {
             type: 'flight',
@@ -32,16 +48,39 @@ function Flight() {
                 'Content-Type': 'application/json',
             },
         }).then((response) => {
-            console.log(response.data);
+            addToFirestore(response.data);
         }).catch((error) => {
             console.log(error);
         })
     }
 
+    const addToFirestore = async (data) => {
+        // Add data to Firestore
+        try {
+            const docRef = await addDoc(collection(db, `userDetails/${user.uid}/flightEmissions`), {
+                user: user.uid,
+                date: date,
+                emissions: data.data.attributes.carbon_kg,
+                passengers: passengers,
+                departure: departure,
+                destination: destination
+            })
+            navigate('/dashboard')
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
     return (
         <div className="text-center justify-center mt-10">
-            <h1>Flights</h1>
+            <h1 className="font-thin">FLIGHT EMISSIONS</h1>
             <form className="mx-auto" onSubmit={flightCalc}>
+
+                <label className="mb-2 font-medium text-gray-900">Date</label>
+                <div className="flex py-3 mx-auto mb-4 w-50 overflow-hidden rounded-md bg-white shadow shadow-black/20">
+                    <input className="block text-center font-medium text-xl w-full flex-1 py-2 px-3 focus:outline-none" type="text" placeholder="dd/mm/yyyy" value={chosenDate} onChange={(e) => setChosenDate(e.target.value)} />
+                </div>
+
                 <label className="mb-2 font-medium text-gray-900">Passengers</label>
                 <div className="flex py-3 mx-auto mb-4 w-50 overflow-hidden rounded-md bg-white shadow shadow-black/20">
                     <input required className="block text-center font-medium text-xl w-full flex-1 py-2 px-3 focus:outline-none" type="integer" placeholder="2" onChange={(e) => setPassengers(e.target.value)} />

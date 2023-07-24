@@ -5,6 +5,7 @@ import { auth, app, db } from "../firebase";
 import { Container, Form, Button, Card } from "react-bootstrap";
 import { doc, setDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 
 function Signup() {
@@ -32,7 +33,6 @@ function Signup() {
             const user = userCredentials.user;
             const userDetails = doc(db, `userDetails/${user.uid}`);
             setDoc(userDetails, {name: {name}}, {merge: true});
-            console.log(user);
             navigate('/dashboard');
         }).catch((e) => {
             console.log(e);
@@ -41,32 +41,32 @@ function Signup() {
     }
 
     return (
-        <div>
+        <div className="h-screen">
             <Container className="d-flex align-items-center justify-content-center" style={{ minHeight: "60vh"}}>
                 <div className="w-100" style={{ maxWidth: "400px"}}>
-                    <Card>
+                    <Card className="text-center">
                         <Card.Body>
                             <h2 className="text-center mb-4">Sign Up</h2>
                             <Form onSubmit={ signUp }>
-                                <Form.Group id="name">
+                                <Form.Group className="py-2" id="name">
                                     <Form.Label>Name</Form.Label>
                                     <Form.Control type="text" value={name} onChange={(e) => setName(e.target.value)} required />
                                 </Form.Group>
-                                <Form.Group id="email">
+                                <Form.Group className="py-2" id="email">
                                     <Form.Label>Email</Form.Label>
                                     <Form.Control type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
                                 </Form.Group>
-                                <Form.Group id="password">
+                                <Form.Group className="py-2" id="password">
                                     <Form.Label>Password</Form.Label>
                                     <Form.Control type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
                                 </Form.Group>
-                                <Form.Group id="password-confirm">
+                                <Form.Group className="py-2" id="password-confirm">
                                     <Form.Label>Confirm Password</Form.Label>
                                     <Form.Control type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
                                 </Form.Group>
                                 <Button className="w-100 mt-2" type="submit">Sign Up</Button>
                             </Form>
-                            <p>Already have an account? Log In</p>
+                            <p className="py-3">Already have an account? <Link to="/signin">Log In</Link></p>
                             {error && <span>{error}</span>}
                         </Card.Body>
                     </Card>

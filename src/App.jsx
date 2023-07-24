@@ -4,15 +4,15 @@ import { auth } from "./firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { AuthProvider } from "./contexts/AuthContext"
 import Home from "./components/Home"
+import About from "./components/About";
 import Signup from "./components/Signup"
 import SignIn from "./components/Signin"
-import Flight from "./components/Flight"
 import Dashboard from "./components/Dashboard"
 import LogEmissions from "./components/LogEmissions";
+import Footer from "./components/Footer";
+import clouds from './images/clouds.jpg'
 
 // import './App.css'
-
-
 
 function App() {
 
@@ -24,11 +24,10 @@ function App() {
       const listen = onAuthStateChanged(auth, (user) => {
           if (user) {
               setAuthUser(user);
-              console.log(user);
           } else {
               setAuthUser(null);
           }
-      });
+      }); 
 
       return () => {
           listen();
@@ -43,38 +42,45 @@ function App() {
   }
 
   return (
-    <div className="">
-      <nav className="bg-orange-100 fixed w-full z-10 top-0 left-0">
-        <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto">
+    <div className="flex flex-col justify-between h-full">
+      <nav className="bg-gray-900 sticky w-full z-10 top-0 left-0">
+        <div className="flex flex-wrap items-center justify-between mx-auto">
           <Link to="/" className="flex items-center no-underline">
-            <img className="h-20 my-3 mx-4" src="../src/images/ctlogo3.png" alt="logo" />
+            <img className="h-12 my-3 mx-4" src="../src/images/ctlogo4.png" alt="logo" />
             {/* <h1 className="text-6xl text-orange-700 no-underline whitespace-nowrap text-grey">CarbonTrack</h1> */}
           </Link>
-          <div className="flex md:order-2" id="navbarNavDropdown">
+          <div className="flex md:order-2 mx-4" id="navbarNavDropdown">
+            <ul className="flex px-5 my-auto flex-col font-thin text-xl md:p-0 rounded-lg bg-gray-900 md:flex-row md:space-x-8 md:mt-0 md:border-0">
+              <li><Link className="block no-underline py-2 pl-3 pr-4 text-gray-100" to="/about">ABOUT</Link></li>
+            </ul>
             {authUser ?
-            <ul className="flex flex-col font-medium text-xl md:p-0 rounded-lg bg-orange-100 md:flex-row md:space-x-8 md:mt-0 md:border-0">
-              <li><Link className="block no-underline py-2 pl-3 pr-4 text-blue-950" to="/dashboard" user={authUser}>DASHBOARD</Link></li>
-              <li><Link className="block no-underline py-2 pl-3 pr-4 text-blue-950" to="/logemissions" user={authUser}>LOG EMISSIONS</Link></li>
-              <button className="block no-underline py-2 pl-3 pr-4 text-blue-950" onClick={userSignOut}>SIGN OUT</button>
+            <ul className="flex my-auto flex-col font-thin text-xl md:p-0 rounded-lg bg-gray-900 md:flex-row md:space-x-8 md:mt-0 md:border-0">
+              <li><Link className="block no-underline py-2 pl-3 pr-4 text-gray-100" to="/dashboard" user={authUser}>DASHBOARD</Link></li>
+              <li><Link className="block no-underline py-2 pl-3 pr-4 text-gray-100" to="/logemissions" user={authUser}>LOG EMISSIONS</Link></li>
+              <button className="block no-underline py-2 pl-3 pr-4 text-gray-100" onClick={userSignOut}>SIGN OUT</button>
             </ul>
             :
-            <ul className="flex flex-col font-medium text-xl md:p-0 rounded-lg bg-orange-100 md:flex-row md:space-x-8 md:mt-0 md:border-0">
-              <li><Link className="block no-underline py-2 pl-3 pr-4 text-blue-950" to="/signup">Sign Up</Link></li>
-              <li><Link className="block no-underline py-2 pl-3 pr-4 text-blue-950" to="/signin">Log In</Link></li>
+            <ul className="flex my-auto flex-col font-thin text-xl md:p-0 rounded-lg bg-gray-900 md:flex-row md:space-x-8 md:mt-0 md:border-0">
+              <li><Link className="block no-underline py-2 pl-3 pr-4 text-gray-100" to="/signup">SIGN UP</Link></li>
+              <li><Link className="block no-underline py-2 pl-3 pr-4 text-gray-100" to="/signin">LOG IN</Link></li>
             </ul>
             }
           </div>
         </div>
       </nav>
-      <div className="mt-40 mx-auto max-w-5xl">
+      <div className="w-full h-full bg-gray-100">
         <Routes>
-          <Route path="/" element={ <Home /> } />
-          <Route path="/dashboard" element={ <Dashboard /> } />
+          <Route path="/" element={ <Home user={authUser} /> } />
+          <Route path="/about" element={ <About />} />
+          <Route path="/dashboard" element={ <Dashboard user={authUser} /> } />
           <Route path="/signup" element={ <Signup /> } />
           <Route path="/signin" element={ <SignIn /> } />
-          <Route path="/logemissions" element={ <LogEmissions /> } />
+          <Route path="/logemissions" element={ <LogEmissions user={authUser} /> } />
         </Routes>
       </div>
+      {/* <div className="bg-gray-900 w-full h-42 z-10 sticky bottom-0 left-0">
+        <Footer />
+      </div> */}
     </div>   
   )
 }

@@ -1,7 +1,15 @@
 import { useState } from "react";
 import axios from "axios";
+import { collection, addDoc } from "firebase/firestore";
+import { db } from "../firebase";
+import { useNavigate } from "react-router-dom";
 
-function Electricity () {
+function Electricity (props) {
+
+    const navigate = useNavigate();
+
+    const user = props.user;
+    let date = '';
 
     const ausStates = {
         'ACT': 'Australian Capital Territory',
@@ -24,6 +32,13 @@ function Electricity () {
 
         e.preventDefault();
 
+        if (date1 === '') {
+            date = new Date();
+        } else {
+            let dateParts = date1.split('/');
+            date = new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0]);
+        }
+
         const endpoint = 'https://beta4.api.climatiq.io/estimate';
         const apiKey = 'ND7MNVVST3MK8CQZCB4JTJWWPVXE'
 
@@ -42,24 +57,51 @@ function Electricity () {
             }
         }
 
-        try {
-            const response = await axios.post(endpoint, requestData, {
-                headers: {
-                    'Authorization': `Bearer ${apiKey}`,
-                    'Content-Type': 'application/json'
-                },
-            })
-            console.log('Working', date1, date2)
+        axios.post(endpoint, requestData, {
+            headers: {
+                Authorization: `Bearer ${apiKey}`,
+                'Content-Type': 'application/json',
+            },
+        }).then((response) => {
+            addToFirestore(response.data);
             console.log(response.data);
-        } catch (error) {
+        }).catch((error) => {
             console.log(error);
+        })
+
+        // try {
+        //     const response = await axios.post(endpoint, requestData, {
+        //         headers: {
+        //             'Authorization': `Bearer ${apiKey}`,
+        //             'Content-Type': 'application/json'
+        //         },
+        //     })
+        //     console.log('Working', date1, date2)
+        //     console.log(response.data);
+        // } catch (error) {
+        //     console.log(error);
+        // }
+    }
+
+    const addToFirestore = async (data) => {
+        // Add data to Firestore
+        try {
+            const docRef = await addDoc(collection(db, `userDetails/${user.uid}/electricityEmissions`), {
+                user: user.uid,
+                date: date,
+                emissions: data.co2e,
+                region: state,
+                energy: Number(energy),
+            })
+            navigate('/dashboard')
+        } catch (e) {
+            console.log(e);
         }
     }
 
-
     return (
         <div className="text-center justify-center mt-10">
-            <h1>Electricity emissions</h1>
+            <h1 className="font-thin">ELECTRICITY EMISSIONS</h1>
             <form className="mx-auto" onSubmit={electricityCalc}>
                 <label className="mb-2 font-medium text-gray-900">From</label>
                 <div className="flex py-3 mx-auto mb-4 w-50 overflow-hidden rounded-md bg-white shadow shadow-black/20">
