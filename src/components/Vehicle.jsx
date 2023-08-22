@@ -64,8 +64,8 @@ function Vehicle(props) {
     }, [makeId])
 
     useEffect(() => {
-        if (models !== []) {
-            console.log(models);
+        if (models.length > 0) {
+            console.log('Models:', models);
             // Map and filter models to remove duplicate names for dropdown
             const names = models.map((item) => item.data.attributes.name);
             const namesFiltered = names.filter((item, index) => !names.includes(item, index + 1));

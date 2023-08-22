@@ -47,22 +47,21 @@ function App() {
         <div className="flex flex-wrap items-center justify-between mx-auto">
           <Link to="/" className="flex items-center no-underline">
             <img className="h-12 my-3 mx-4" src="../src/images/ctlogo4.png" alt="logo" />
-            {/* <h1 className="text-6xl text-orange-700 no-underline whitespace-nowrap text-grey">CarbonTrack</h1> */}
           </Link>
           <div className="flex md:order-2 mx-4" id="navbarNavDropdown">
             <ul className="flex px-5 my-auto flex-col font-thin text-xl md:p-0 rounded-lg bg-gray-900 md:flex-row md:space-x-8 md:mt-0 md:border-0">
-              <li><Link className="block no-underline py-2 pl-3 pr-4 text-gray-100" to="/about">ABOUT</Link></li>
+              <li><Link className="block no-underline py-2 pl-3 pr-4 text-gray-100 hover:text-blue-300 transition-all" to="/about">ABOUT</Link></li>
             </ul>
             {authUser ?
             <ul className="flex my-auto flex-col font-thin text-xl md:p-0 rounded-lg bg-gray-900 md:flex-row md:space-x-8 md:mt-0 md:border-0">
-              <li><Link className="block no-underline py-2 pl-3 pr-4 text-gray-100" to="/dashboard" user={authUser}>DASHBOARD</Link></li>
-              <li><Link className="block no-underline py-2 pl-3 pr-4 text-gray-100" to="/logemissions" user={authUser}>LOG EMISSIONS</Link></li>
-              <button className="block no-underline py-2 pl-3 pr-4 text-gray-100" onClick={userSignOut}>SIGN OUT</button>
+              <li><Link className="block no-underline py-2 pl-3 pr-4 text-gray-100 hover:text-blue-300 transition-all" to="/dashboard" user={authUser}>DASHBOARD</Link></li>
+              <li><Link className="block no-underline py-2 pl-3 pr-4 text-gray-100 hover:text-blue-300 transition-all" to="/logemissions" user={authUser}>LOG EMISSIONS</Link></li>
+              <button className="block no-underline py-2 pl-3 pr-4 text-gray-100 hover:text-blue-300 transition-all" onClick={userSignOut}>SIGN OUT</button>
             </ul>
             :
             <ul className="flex my-auto flex-col font-thin text-xl md:p-0 rounded-lg bg-gray-900 md:flex-row md:space-x-8 md:mt-0 md:border-0">
-              <li><Link className="block no-underline py-2 pl-3 pr-4 text-gray-100" to="/signup">SIGN UP</Link></li>
-              <li><Link className="block no-underline py-2 pl-3 pr-4 text-gray-100" to="/signin">LOG IN</Link></li>
+              <li><Link className="block no-underline py-2 pl-3 pr-4 text-gray-100 hover:text-blue-300 transition-all" to="/signup">SIGN UP</Link></li>
+              <li><Link className="block no-underline py-2 pl-3 pr-4 text-gray-100 hover:text-blue-300 transition-all" to="/signin">LOG IN</Link></li>
             </ul>
             }
           </div>

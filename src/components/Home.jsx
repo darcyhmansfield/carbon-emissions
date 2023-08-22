@@ -5,7 +5,7 @@ const Home = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="w-screen">
+    <div className="w-screen transition-all">
       <div className="bg-gradient-to-tr from-gray-950 to-gray-700 h-screen w-full relative">
         <img src="https://images.pexels.com/photos/19670/pexels-photo.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="clouds" className="fixed w-full h-full object-cover mix-blend-overlay" />
         <div className="p-24 w-4/6">

@@ -1,18 +1,5 @@
 import React, { useState, useEffect, Fragment, useContext } from 'react';
-import {
-  doc,
-  onSnapshot,
-  updateDoc,
-  setDoc,
-  deleteDoc,
-  collection,
-  serverTimestamp,
-  getDocs,
-  query,
-  where,
-  orderBy,
-  limit,
-} from 'firebase/firestore';
+import { onSnapshot, collection } from 'firebase/firestore';
 import { db } from '../firebase';
 import BarChart from './Charts/BarChart';
 
@@ -46,8 +33,8 @@ function Dashboard(props) {
     let fEmissionsArray = [0,0,0,0,0,0,0,0];
     let sEmissionsArray = [0,0,0,0,0,0,0,0];
 
-
-    for (let i = 0; i<=7; i++) {
+    // set date array as previous 7 days (including current day)
+    for (let i = 0; i<=6; i++) {
         const day = new Date(date.getTime() - (i * 24 * 60 * 60 * 1000))
         dateArray.push(`${day.getDate()}/${day.getMonth()+1}/${day.getFullYear()}`)
     }
