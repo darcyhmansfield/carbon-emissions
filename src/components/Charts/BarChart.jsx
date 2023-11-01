@@ -6,6 +6,7 @@ import {
     Tooltip,
     Legend
 } from 'chart.js'
+import { timers } from 'jquery';
 import { Bar } from 'react-chartjs-2';
 
 ChartJS.register(
@@ -48,7 +49,30 @@ const BarChart = (props) => {
     }
 
     const options = {
-
+        responsive:true,
+        scales:{
+            x:{
+                type: 'time',
+                time: {
+                    tooltipFormat: 'DD T',
+                },
+                title: {
+                    display: true,
+                    text: props.xlabel
+                }
+            },
+            y:{
+                title: {
+                    display: true,
+                    text: props.ylabel
+                },
+                tick: {
+                    callback: function (value){
+                        return '$' + value + 'm'
+                    }
+                }
+            }
+        }
     }
 
     return (
